@@ -1,0 +1,96 @@
+{%- set node = pillar.nodes[grains['host']] -%}
+# interfaces(5) file used by ifup(8) and ifdown(8)
+auto lo
+iface lo inet loopback
+
+##
+# hosts/ganeti private bridge
+##
+auto br{{ "%04d"|format(pillar['cluster'].net.gnt.vlan) }}
+iface br{{ "%04d"|format(pillar['cluster'].net.gnt.vlan) }} inet static
+    address {{ node.gnt_ip }}
+    netmask {{ pillar['cluster'].net.gnt.netmask }}
+    bridge_ports {{ pillar['cluster'].net.gnt.physical_iface }}.{{ pillar['cluster'].net.gnt.vlan }}
+    bridge_stp off
+    bridge_fd 0
+    bridge_maxwait 1
+    mtu 1500
+    up /sbin/ethtool --offload $IFACE gso off tso off sg off gro off
+    # manually setting the bridge mac address to the "primary" NIC
+    up /sbin/ip link set addr $(cat /sys/class/net/{{ pillar['cluster'].net.gnt.physical_iface }}/address) dev $IFACE
+
+##
+# drbd network
+##
+auto {{ pillar['cluster'].net.drbd.physical_iface }}
+iface {{ pillar['cluster'].net.drbd.physical_iface }} inet static
+    address {{ node.drbd_ip }}
+    netmask {{ pillar['cluster'].net.drbd.netmask }}
+    mtu 9000
+
+##
+# public firewalled bridge
+##
+auto br{{ "%04d"|format(pillar['cluster'].net.public.vlan) }}
+iface br{{ "%04d"|format(pillar['cluster'].net.public.vlan) }} inet manual
+    bridge_ports {{ pillar['cluster'].net.public.physical_iface }}
+    bridge_stp off
+    bridge_fd 0
+    bridge_maxwait 1
+    mtu 1500
+    up /sbin/ethtool --offload $IFACE gso off tso off sg off gro off
+    # manually setting the bridge mac address to the "primary" NIC
+    up /sbin/ip link set addr $(cat /sys/class/net/{{ pillar['cluster'].net.public.physical_iface }}/address) dev $IFACE
+    # fix linux bridgeing when using vlan trunk with untagged interface
+    up /sbin/ebtables -t broute -A BROUTING -i {{ pillar['cluster'].net.public.physical_iface }} -p 802_1Q -j DROP
+    post-down /sbin/ebtables -t broute -D BROUTING -i {{ pillar['cluster'].net.public.physical_iface }} -p 802_1Q -j DROP
+
+##
+# public bridge (for now on drbd network)
+##
+auto br1001
+iface br1001 inet static
+    address {{ node.public_ip }}
+    netmask {{ pillar['cluster'].net.public.netmask }}
+    gateway {{ pillar['cluster'].net.public.gateway }}
+    bridge_ports {{ pillar['cluster'].net.drbd.physical_iface }}.1001
+    bridge_stp off
+    bridge_fd 0
+    bridge_maxwait 1
+    mtu 1500
+    up /sbin/ethtool --offload $IFACE gso off tso off sg off gro off
+    # manually setting the bridge mac address to the "primary" NIC
+    up /sbin/ip link set addr $(cat /sys/class/net/{{ pillar['cluster'].net.drbd.physical_iface }}/address) dev $IFACE
+
+
+###
+## other networks
+###
+
+
+##
+# null - isolation
+##
+auto br0000
+iface br0000 inet manual
+    bridge_ports none
+    bridge_fd 1
+    bridge_stp off
+    bridge_maxwait 1
+    mtu 1500
+
+{% for name, vlan in pillar['vlans'].items() %}
+##
+# {{ name }} - vlan{{ vlan }}
+##
+auto br{{ "%04d"|format(vlan) }}
+iface br{{ "%04d"|format(vlan) }} inet manual
+    bridge_ports {{ pillar['cluster'].net.public.physical_iface }}.{{ vlan }}
+    bridge_fd 1
+    bridge_stp off
+    bridge_maxwait 1
+    mtu 1500
+    up /sbin/ethtool --offload $IFACE gso off tso off sg off gro off || true
+    up /sbin/ip link set addr $(cat /sys/class/net/{{ pillar['cluster'].net.public.physical_iface }}/address) dev $IFACE
+{% endfor %}
+

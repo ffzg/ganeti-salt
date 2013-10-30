@@ -1,0 +1,39 @@
+# Users configuration
+#
+# Author: lblasc@znode.net (Luka Blaskovic)
+#
+# Description:
+# Add administrators.
+#
+#
+include:
+  - packages
+
+lblask:
+  user.present:
+    - fullname: Luka Blaskovic
+    - shell: /bin/bash
+    - home: /home/lblask
+    - groups:
+      - sudo
+    - require:
+      - pkg: sudo
+
+  file.directory:
+    - name: /home/lblask/.ssh
+    - user: lblask
+    - group: lblask
+    - mode: 700
+    - makedirs: True
+    - recurse:
+      - user
+      - group
+    - require:
+      - user: lblask
+
+  ssh_auth.present:
+      - user: lblask
+      - source: salt://users/keys/lblask_pub
+      - require:
+        - file: lblask
+

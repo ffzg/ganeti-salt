@@ -1,0 +1,4 @@
+repos
+pillar/*/*.sls
+salt/users/init.sls
+*_pub

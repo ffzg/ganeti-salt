@@ -1,0 +1,14 @@
+#/etc/sysfs.conf - Configuration file for setting sysfs attributes.
+#
+# The sysfs mount directory is automatically prepended to the attribute paths.
+#
+# Syntax:
+# attribute = value
+# mode attribute = 0600 # (any valid argument for chmod)
+# owner attribute = root:wheel # (any valid argument for chown)
+
+block/sda/queue/scheduler = deadline
+block/sda/queue/iosched/front_merges = 0
+block/sda/queue/iosched/read_expire = 150
+block/sda/queue/iosched/write_expire = 1500
+
