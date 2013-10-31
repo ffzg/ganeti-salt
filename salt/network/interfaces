@@ -16,7 +16,7 @@ iface br{{ "%04d"|format(pillar['cluster'].net.gnt.vlan) }} inet static
     bridge_maxwait 1
     mtu 1500
     up /sbin/ethtool --offload $IFACE gso off tso off sg off gro off
-    # manually setting the bridge mac address to the "primary" NIC
+    # manually set the bridge mac address to the "primary" NIC
     up /sbin/ip link set addr $(cat /sys/class/net/{{ pillar['cluster'].net.gnt.physical_iface }}/address) dev $IFACE
 
 ##
@@ -38,8 +38,10 @@ iface br{{ "%04d"|format(pillar['cluster'].net.public.vlan) }} inet manual
     bridge_fd 0
     bridge_maxwait 1
     mtu 1500
+    # kvm bridge network tuning https://code.google.com/p/ganeti/wiki/PerformanceTuning#Networking
+    up /sbin/ethtool --offload {{ pillar['cluster'].net.public.physical_iface }} gso off tso off sg off gro off
     up /sbin/ethtool --offload $IFACE gso off tso off sg off gro off
-    # manually setting the bridge mac address to the "primary" NIC
+    # manually set the bridge mac address to the "primary" NIC
     up /sbin/ip link set addr $(cat /sys/class/net/{{ pillar['cluster'].net.public.physical_iface }}/address) dev $IFACE
     # fix linux bridgeing when using vlan trunk with untagged interface
     up /sbin/ebtables -t broute -A BROUTING -i {{ pillar['cluster'].net.public.physical_iface }} -p 802_1Q -j DROP
@@ -59,7 +61,7 @@ iface br1001 inet static
     bridge_maxwait 1
     mtu 1500
     up /sbin/ethtool --offload $IFACE gso off tso off sg off gro off
-    # manually setting the bridge mac address to the "primary" NIC
+    # manually set the bridge mac address to the "primary" NIC
     up /sbin/ip link set addr $(cat /sys/class/net/{{ pillar['cluster'].net.drbd.physical_iface }}/address) dev $IFACE
 
 
