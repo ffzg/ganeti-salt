@@ -18,6 +18,7 @@ base:
     - users
     - ntp
     - resolv
+    - dell
 
   '*.gnt.ffzg.hr':
     - users.gnt

@@ -25,18 +25,3 @@ extra_packages:
       - sudo
       - curl
 
-{% for node in pillar['nodes'] %}
-# Find the current node.
-{% if node == grains['host'] %}
-# Check if node uses Dell hardware.
-{% if pillar.nodes[node].dell %}
-# Install dell omsa.
-dell_packages:
-  pkg.installed:
-    - names:
-      - srvadmin-base 
-      - srvadmin-omacore
-      - srvadmin-omcommon
-{% endif %}
-{% endif %}
-{% endfor %}
