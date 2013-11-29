@@ -101,8 +101,9 @@ ganeti2:
         - ganeti2
         - ganeti-extra
 
-# Manage /etc/modules, setup/load drbd and
-# tcp_highspeed congestion control algorithm.
+# Manage /etc/modules, setup/load drbd,
+# tcp_highspeed congestion control algorithm and
+# bridge module (because sysctrl will fail).
 /etc/modules:
   file.managed:
     - source: salt://ganeti/modules
@@ -114,6 +115,7 @@ ganeti2:
       modules:
         - drbd minor_count=255 usermode_helper=/bin/true
         - tcp_highspeed
+        - bridge
     
 # Setup kernel & initrd symlinks for easier maintenance.
 /boot/vmlinuz-3.2-kvmU:
