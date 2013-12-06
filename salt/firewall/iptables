@@ -1,5 +1,5 @@
 *filter
-:INPUT ACCEPT [1:328]
+:INPUT ACCEPT [0:0]
 :FORWARD ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 :BADFLAGS - [0:0]
@@ -12,6 +12,10 @@
 -A INPUT -s 193.198.212.15/32 -j ACCEPT
 -A INPUT -i br1001 -j PUBLIC_IN
 -A OUTPUT -d 193.198.212.15/32 -j ACCEPT
+# allow vnc for ssh port forwarding and GWM access
+-A OUTPUT -m owner --uid-owner 2000-2030 -s 127.0.0.1 -j ACCEPT
+-A OUTPUT -m owner --uid-owner 2000-2030 -s 10.80.2.20 -j ACCEPT
+# log and drop VM network access attempts
 -A OUTPUT -m owner --uid-owner 2000-2030 ! -d 10.80.3.0/24 -m limit --limit 5/min -j LOG --log-prefix "ganeti uid pool user network " --log-level 4
 -A OUTPUT -m owner --uid-owner 2000-2030 ! -d 10.80.3.0/24 -j DROP
 -A OUTPUT -o br1001 -j PUBLIC_OUT
