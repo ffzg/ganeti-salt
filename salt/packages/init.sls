@@ -24,4 +24,8 @@ extra_packages:
       - dstat
       - sudo
       - curl
+      - smartmontools
+      - screen
+      - iftop
+      - nfs-common
 

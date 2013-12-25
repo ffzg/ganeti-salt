@@ -86,10 +86,11 @@ ganeti-extra:
       - kpartx
       - ganeti-instance-debootstrap
       - lvm2
+      - qemu-kvm
 
 ganeti2:
   pkg.installed:
-    - version: 2.6.2-3~bpot70+1
+    - version: 2.9.2-1~bpo70+ffzg+1
 
   service.running:
     - name: ganeti
@@ -100,6 +101,12 @@ ganeti2:
     - pkg:
         - ganeti2
         - ganeti-extra
+
+ganeti-htools:
+  pkg.installed:
+    - version: 2.9.2-1~bpo70+ffzg+1
+    - require:
+      - pkg: ganeti2
 
 # Manage /etc/modules, setup/load drbd,
 # tcp_highspeed congestion control algorithm and
@@ -139,6 +146,8 @@ kvm_tuning:
   cmd.run:
     - name: dpkg-divert --add --rename --divert /usr/bin/kvm.real /usr/bin/kvm
     - unless: dpkg-divert --list | grep /usr/bin/kvm.real
+    - require:
+      - pkg: ganeti-extra
 
   file.managed:
     - name: /usr/bin/kvm
