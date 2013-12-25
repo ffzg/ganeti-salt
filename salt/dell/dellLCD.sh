@@ -3,7 +3,7 @@
 # Set LCD status (hostname, load, ganeti master) 
 #
 
-load="$(cat /proc/loadavg | gawk '{print $3}')"
+load="$(cat /proc/loadavg | awk '{print $3}')"
 ganeti_master_hostname="$(/usr/sbin/gnt-cluster getmaster)"
 hostname="$(hostname)"
 omconfig="/opt/dell/srvadmin/bin/omconfig"
