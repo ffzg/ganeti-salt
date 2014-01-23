@@ -90,7 +90,7 @@ ganeti-extra:
 
 ganeti2:
   pkg.installed:
-    - version: 2.9.2-1~bpo70+ffzg+1
+    - version: 2.9.2-1~bpo70+ffzg+nocompress+2
 
   service.running:
     - name: ganeti
@@ -104,7 +104,7 @@ ganeti2:
 
 ganeti-htools:
   pkg.installed:
-    - version: 2.9.2-1~bpo70+ffzg+1
+    - version: 2.9.2-1~bpo70+ffzg+nocompress+2
     - require:
       - pkg: ganeti2
 
