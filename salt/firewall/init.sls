@@ -11,11 +11,6 @@
 include: 
   - apt_sources
 
-# Install debconf-utils.
-debconf-utils:
-  pkg:
-    - installed
-
 # Setup iptables-persistent for ipv4 and ipv6.
 iptables-persistent:
   debconf:

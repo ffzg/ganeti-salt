@@ -6,6 +6,12 @@
 # APT sources configuration file for: main debian repos (including
 # backports), ffzg, saltstack and dell omsa.
 #
+
+# Install debconf-utils.
+debconf-utils:
+  pkg:
+    - installed
+
 # saltscack repo
 apt_sources_salt:
   cmd.run:
