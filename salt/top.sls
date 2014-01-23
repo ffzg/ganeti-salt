@@ -9,6 +9,7 @@
 base:
   '*':
     - apt_sources
+    - locales
     - acpi
     - firewall
     - ssh
