@@ -81,10 +81,8 @@ ganeti-extra:
   pkg.installed:
     - names:
       - ethtool
-      - debootstrap
       - dump
       - kpartx
-      - ganeti-instance-debootstrap
       - lvm2
       - qemu-kvm
 

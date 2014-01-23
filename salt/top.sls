@@ -25,3 +25,4 @@ base:
   '*.gnt.ffzg.hr':
     - users.gnt
     - ganeti
+    - ganeti.instance_debootstrap
