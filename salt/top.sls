@@ -10,6 +10,7 @@ base:
   '*':
     - apt_sources
     - locales
+    - timezone
     - acpi
     - firewall
     - ssh
