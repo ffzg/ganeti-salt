@@ -13,6 +13,7 @@ include:
 extra_packages:
   pkg.installed:
     - names:
+      - atop
       - vim-nox
       - less
       - lsof
@@ -28,4 +29,5 @@ extra_packages:
       - screen
       - iftop
       - nfs-common
+      - ncurses-term
 
