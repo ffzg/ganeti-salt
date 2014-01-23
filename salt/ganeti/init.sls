@@ -122,6 +122,14 @@ ganeti-htools:
         - tcp_highspeed
         - bridge
     
+# kvm nasted virtualization support
+#/etc/modprobe.d/kvm_nested.conf:
+#  file.managed:
+#    - source: salt://ganeti/files/kvm_nested.conf
+#    - user: root
+#    - group: root
+#    - mode: 644
+
 # Setup kernel & initrd symlinks for easier maintenance.
 /boot/vmlinuz-3.2-kvmU:
   file.symlink:
