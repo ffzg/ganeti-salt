@@ -1,5 +1,6 @@
 repos
 pillar/*/*.sls
 salt/users/init.sls
+salt/top.sls
 salt/ganeti/files/instance-debootstrap
 *_pub
