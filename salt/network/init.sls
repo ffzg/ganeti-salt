@@ -6,19 +6,18 @@
 # Salted network node configuration
 #
 # TODO(lblasc@znode.net):
-# - support bonding interfaces per node
 # - write real salt network confing for debian (=hard work)
 # 
-include:
-  - apt_sources
 
-# Manage the interfaces file (no debian network state).
+# For now manage the interfaces file
 network_interfaces:
   pkg.installed:
     - names:
+      - iproute
       - bridge-utils
       - vlan
       - ebtables
+      - ifenslave-2.6
 
   file.managed:
     - source: salt://network/interfaces

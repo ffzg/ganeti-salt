@@ -13,7 +13,7 @@ Salt states for Ganeti node setup.
 
 **Todo:**
 
-* bounding network node target
+* ~~bounding network node target~~
 * remove loads of hardcoded variables
 * write proper Debian network configuration
 * other various checks and enhancements

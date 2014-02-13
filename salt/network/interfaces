@@ -3,73 +3,25 @@
 auto lo
 iface lo inet loopback
 
+{# do not configure bonding interface if overriding defaults #}
+{%- if not node['defaults'] is defined -%}
 ##
-# hosts/ganeti private bridge
+# bonding interface
 ##
-auto br{{ "%04d"|format(pillar['cluster'].net.gnt.vlan) }}
-iface br{{ "%04d"|format(pillar['cluster'].net.gnt.vlan) }} inet static
-    address {{ node.gnt_ip }}
-    netmask {{ pillar['cluster'].net.gnt.netmask }}
-    bridge_ports {{ pillar['cluster'].net.gnt.physical_iface }}.{{ pillar['cluster'].net.gnt.vlan }}
-    bridge_stp off
-    bridge_fd 0
-    bridge_maxwait 1
-    mtu 1500
+auto bond0
+iface bond0 inet manual
+    bond-slaves all
+    bond-mode 802.3ad
+    bond-lacp-rate fast
+    bond-miimon 100
+    bond-xmit_hash_policy layer3+4
+    bond-downdelay 200
+    bond-updelay 200
     up /sbin/ethtool --offload $IFACE gso off tso off sg off gro off
-    # manually set the bridge mac address to the "primary" NIC
-    up /sbin/ip link set addr $(cat /sys/class/net/{{ pillar['cluster'].net.gnt.physical_iface }}/address) dev $IFACE
+    up /sbin/ip link set dev $IFACE mtu 9000
+    up /sbin/ip link set $IFACE txqueuelen 10000
 
-##
-# drbd network
-##
-auto {{ pillar['cluster'].net.drbd.physical_iface }}
-iface {{ pillar['cluster'].net.drbd.physical_iface }} inet static
-    address {{ node.drbd_ip }}
-    netmask {{ pillar['cluster'].net.drbd.netmask }}
-    mtu 9000
-
-##
-# public firewalled bridge
-##
-auto br{{ "%04d"|format(pillar['cluster'].net.public.vlan) }}
-iface br{{ "%04d"|format(pillar['cluster'].net.public.vlan) }} inet manual
-    bridge_ports {{ pillar['cluster'].net.public.physical_iface }}
-    bridge_stp off
-    bridge_fd 0
-    bridge_maxwait 1
-    mtu 1500
-    # kvm bridge network tuning https://code.google.com/p/ganeti/wiki/PerformanceTuning#Networking
-    up /sbin/ethtool --offload {{ pillar['cluster'].net.public.physical_iface }} gso off tso off sg off gro off
-    up /sbin/ethtool --offload $IFACE gso off tso off sg off gro off
-    # manually set the bridge mac address to the "primary" NIC
-    up /sbin/ip link set addr $(cat /sys/class/net/{{ pillar['cluster'].net.public.physical_iface }}/address) dev $IFACE
-    # fix linux bridgeing when using vlan trunk with untagged interface
-    up /sbin/ebtables -t broute -A BROUTING -i {{ pillar['cluster'].net.public.physical_iface }} -p 802_1Q -j DROP
-    post-down /sbin/ebtables -t broute -D BROUTING -i {{ pillar['cluster'].net.public.physical_iface }} -p 802_1Q -j DROP
-
-##
-# public bridge (for now on drbd network)
-##
-auto br1001
-iface br1001 inet static
-    address {{ node.public_ip }}
-    netmask {{ pillar['cluster'].net.public.netmask }}
-    gateway {{ pillar['cluster'].net.public.gateway }}
-    bridge_ports {{ pillar['cluster'].net.drbd.physical_iface }}.1001
-    bridge_stp off
-    bridge_fd 0
-    bridge_maxwait 1
-    mtu 1500
-    up /sbin/ethtool --offload $IFACE gso off tso off sg off gro off
-    # manually set the bridge mac address to the "primary" NIC
-    up /sbin/ip link set addr $(cat /sys/class/net/{{ pillar['cluster'].net.drbd.physical_iface }}/address) dev $IFACE
-
-
-###
-## other networks
-###
-
-
+{% endif %}
 ##
 # null - isolation
 ##
@@ -80,19 +32,121 @@ iface br0000 inet manual
     bridge_stp off
     bridge_maxwait 1
     mtu 1500
+{#
+Iterate trough pillar dictionary of vlan and vlan names and generate
+appropriate manual netowrk bridge types adding cluster default network
+interface with vlan to bridge_ports parameter.
+Node (in ganeti pillar) can have special network configuration for specific
+vlan/vlans such as:
 
+nodes:
+  vmh11:
+    public:
+      address: 1.2.3.4
+      gateway: 1.2.3.1
+      default_interface: eth0
+
+This example configuration will generate debian static interface type with
+netmask field set to "default" (255.255.255.0) also mtu is assumend to be 1500.
+If default_interface key is present in vlan configuration (like in this
+example) it will override the default interface setting from cluster
+configuration only for this vlan.
+
+There is special reserved vlan name called defaults and with the key
+default_interface we can override default interface for all vlans.
+Interface can be set to "none" wich is useful for remote ganeti nodes where
+all vlans are exposed as empty bridges and latter bridged with openvpn
+interfaces/vlans (for more details check openvpn state).
+
+Pillar example of remote node latter bridged with openvpn exposed vlans:
+
+nodes:
+  remote01:
+    defaults:
+      default_interface: none
+    remote-public:
+      address: 5.6.7.8
+      netmask: 255.255.255.0
+      gateway: 5.6.7.1
+      default_interface: eth0
+    drbd:
+      address: 172.16.11.1
+      netmask: 255.255.255.0
+      mtu: 9000
+
+vlans:
+  public: 5
+  remote-public: 4001
+  drbd: 7
+  user-vlan: 88
+  user-vlan2: 89
+
+Generate empty bridges for user-* vlans, for remote-public vlan
+create bridge called br4001 with bridge port eth0 and inet static
+with defined address, netmask and gateway.
+Drbd vlan will get empty inet static bridge with defined address,
+netmask and mtu. (more examples in pillar/ganeti/init.sls.template)
+#}
 {% for name, vlan in pillar['vlans'].items() %}
 ##
 # {{ name }} - vlan{{ vlan }}
 ##
 auto br{{ "%04d"|format(vlan) }}
+  {%- for vlan_name, data in node.items() if vlan_name == name -%}
+    {%- if data.address is defined %}
+iface br{{ "%04d"|format(vlan) }} inet static
+    address {{ data.address }}
+      {%- if data.netmask is defined %}
+    netmask {{ data.netmask }}
+      {%- else %}
+    netmask 255.255.255.0
+      {%- endif -%}
+      {%- if data.gateway is defined %}
+    gateway {{ data.gateway }}
+      {%- endif -%}
+      {%- if data.mtu is defined %}
+    mtu {{ data.mtu }}
+      {%- else %}
+    mtu 1500
+      {%- endif -%}
+    {%- else %} {# if no address field #}
 iface br{{ "%04d"|format(vlan) }} inet manual
-    bridge_ports {{ pillar['cluster'].net.public.physical_iface }}.{{ vlan }}
+      {%- if data.mtu is defined -%} {# when inet manual setup mtu with ip command #}
+    up /sbin/ip link set dev $IFACE mtu {{ data.mtu }}
+      {%- else %}
+    up /sbin/ip link set dev $IFACE mtu 1500
+      {%- endif -%} {# end setup mtu #}
+    {%- endif -%} {# end address check #}
+    {%- if data.physical_iface is defined %}
+    bridge_ports {{ data.physical_iface }}
+    up /sbin/ip link set addr $(cat /sys/class/net/{{ data.physical_iface }}/address) dev $IFACE
+    {%- elif node['defaults'] is defined -%}
+      {%- if not node['defaults'].physical_iface == 'none' %}
+    up /sbin/ip link set addr $(cat /sys/class/net/{{ node['defaults'].physical_iface }}/address) dev $IFACE
+    bridge_ports {{ node['defaults'].physical_iface }}
+      {%- endif %}
+    bridge_ports none
+    {%- else %}
+    bridge_ports {{ pillar['cluster'].net.defaults.physical_iface }}.{{ vlan }}
+    {%- endif -%}
+  {%- else %}
+iface br{{ "%04d"|format(vlan) }} inet manual
+    up /sbin/ip link set dev $IFACE mtu 1500
+    {%- if node['defaults'] is defined -%}
+      {%- if not node['defaults'].physical_iface == 'none' %}
+    up /sbin/ip link set addr $(cat /sys/class/net/{{ node['defaults'].physical_iface }}/address) dev $IFACE
+    bridge_ports {{ node['defaults'].physical_iface }}.{{ vlan }}
+      {%- else %}
+    bridge_ports none
+      {%- endif -%}
+    {%- else %}
+    up /sbin/ip link set addr $(cat /sys/class/net/{{ pillar['cluster'].net.defaults.physical_iface }}/address) dev $IFACE
+    bridge_ports {{ pillar['cluster'].net.defaults.physical_iface }}.{{ vlan }}
+    {%- endif -%}
+  {%- endfor %}
+    up /sbin/ethtool --offload $IFACE gso off tso off sg off gro off
     bridge_fd 1
     bridge_stp off
     bridge_maxwait 1
-    mtu 1500
-    up /sbin/ethtool --offload $IFACE gso off tso off sg off gro off || true
-    up /sbin/ip link set addr $(cat /sys/class/net/{{ pillar['cluster'].net.public.physical_iface }}/address) dev $IFACE
 {% endfor %}
 

@@ -3,7 +3,7 @@
 # Author: lblasc@znode.net (Luka Blaskovic)
 #
 # Description:
-# Salted Ganeti pillar variables
+# Salted ganeti pillar variables
 #
 # TODO(lblasc@znode.net):
 #  - add more configuration options
@@ -13,33 +13,50 @@ cluster:
   name: cluster
   master_ip: 10.80.2.2
   net:
+    defaults:
+      physical_iface: bond0
     gnt:
       domain: gnt.ffzg.hr
-      netmask: 255.255.255.0
-      vlan: 82
-      physical_iface: eth0 
     public:
       domain: net.ffzg.hr
-      netmask: 255.255.252.0
-      gateway: 111.112.113.1
-      vlan: 1
-      physical_iface: eth0 
     drbd:
       domain: d2bd.ffzg.hr
-      netmask: 255.255.255.0
-      vlan: 83
-      physical_iface: eth1 
 
 nodes:
   node01:
-    gnt_ip: 10.80.2.10
-    public_ip: 111.112.113.10
-    drbd_ip: 10.80.3.10
+    gnt:
+      address: 10.80.2.10
+    public:
+      address: 111.112.113.10
+      netmask: 255.255.0.0
+      gateway: 111.112.113.1
+    drbd:
+      address: 10.80.3.10
+      mtu: 9000
     dell: true
   node02:
-    gnt_ip: 10.80.2.11
-    public_ip: 111.112.113.11
-    drbd_ip: 10.80.3.11
+    gnt:
+      address: 10.80.2.11
+    public:
+      address: 111.112.113.11
+      netmask: 255.255.0.0
+      gateway: 111.112.113.1
+    drbd:
+      address: 10.80.3.11
+      mtu: 9000
+    dell: false
+  remote-node:
+    defaults:
+      physical_iface: none
+    remote-pub:
+      physical_iface: eth0
+      address: 1.2.3.4
+      netmask: 255.255.255.0
+      gateway: 1.2.3.1
+    gnt:
+      address: 10.80.2.21
+    drbd:
+      address: 10.80.3.21
     dell: false
 
 saltmaster:
@@ -51,3 +68,4 @@ vlans:
   vlan-5: 5
   test-vlan-6: 6
   prod-vlan: 1010
+  remote-pub: 4094
