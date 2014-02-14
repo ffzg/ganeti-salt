@@ -58,7 +58,7 @@ include:
 # gnt hostnames
 {{ node }}:
   host.present: 
-    - ip: {{ pillar.nodes[node].gnt_ip }}
+    - ip: {{ pillar.nodes[node].gnt.address }}
     - names:
       - {{ node }}.{{ gnt_domain }}
       {% if node == grains['host'] %}
@@ -68,7 +68,7 @@ include:
 # drbd hostnames
 {{ node }}.{{ drbd_domain }}:
   host.present:
-    - ip: {{ pillar.nodes[node].drbd_ip }}
+    - ip: {{ pillar.nodes[node].drbd.address }}
 
 # public hostnames
 {{ node }}.{{ public_domain }}:

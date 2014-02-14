@@ -9,20 +9,21 @@
 base:
   '*':
     - apt_sources
+    - acpi
     - locales
     - timezone
-    - acpi
-    - firewall
     - ssh
-    - network
     - packages
+    - firewall
     - postfix
     - users
     - ntp
     - resolv
     - dell
 
-  '*.gnt.ffzg.hr':
+  'gnt*'
+    - network
     - users.gnt
     - ganeti
     - ganeti.instance_debootstrap
+
