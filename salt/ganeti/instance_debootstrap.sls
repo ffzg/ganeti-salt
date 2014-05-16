@@ -10,6 +10,9 @@
 ganeti-instance-debootstrap:
   pkg.latest
 
+snf-image:
+  pkg.latest
+
 # put your instance debootstrap file into
 # ganeti/files/instance-debootstrap folder
 /etc/ganeti/instance-debootstrap:
@@ -33,3 +36,7 @@ ganeti-instance-debootstrap:
     - group: root
     - require:
       - pkg: ganeti-instance-debootstrap
+
+/usr/share/debootstrap/scripts/trusty:
+  file.symlink:
+      - target: /usr/share/debootstrap/scripts/gutsy
