@@ -23,7 +23,9 @@ base:
 
   'gnt*'
     - network
-    - users.gnt
+    - ganeti.hosts
+    - ganeti.optimizations
     - ganeti
+    - ganeti.user_pool
     - ganeti.instance_debootstrap
 
