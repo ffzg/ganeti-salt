@@ -7,7 +7,7 @@
 #
 
 # Install ffzg kernel.
-linux-image-3.10.0-1-amd64:
+linux-image-3.10.0-4-amd64:
   pkg.latest
 
 # Install wheezy kernel.
