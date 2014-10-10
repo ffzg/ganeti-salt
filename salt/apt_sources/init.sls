@@ -37,6 +37,14 @@ apt_sources_dell:
       - file: /etc/apt/sources.list
       - file: /etc/apt/sources.list.d/linux.dell.com.sources.list
 
+apt_sources_ceph:
+  cmd.run:
+    - name: wget -q -O- 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc' | apt-key add -
+    - unless: apt-key list | grep 'Ceph Release Key'
+    - require:
+      - file: /etc/apt/sources.list
+      - file: /etc/apt/sources.list.d/ceph.list
+
 /etc/apt/sources.list:
   file.managed:
     - source: salt://apt_sources/sources.list
@@ -48,6 +56,10 @@ apt_sources_dell:
 /etc/apt/sources.list.d/ffzg.list:
   file.managed:
     - source: salt://apt_sources/ffzg.list
+
+/etc/apt/sources.list.d/ceph.list:
+  file.managed:
+    - source: salt://apt_sources/ceph.list
 
 /etc/apt/sources.list.d/linux.dell.com.sources.list:
   file.managed:
