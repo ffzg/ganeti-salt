@@ -29,3 +29,14 @@ network_interfaces:
     - require:
       - pkg: network_interfaces
 
+# Setup eth* optimizations (bigger txqueuelen and disable some hardware
+# offloads). Number of bonding interfaces is not defined so udev rule
+# is used for setting per interface optimizations.
+/etc/udev/rules.d/75-eth-optimization.rules:
+    file.managed:
+      - source: salt://network/75-eth-optimization.rules
+      - user: root
+      - group: root
+      - mode: 655
+      - require:
+        - pkg: network_interfaces
