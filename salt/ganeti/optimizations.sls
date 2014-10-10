@@ -36,12 +36,12 @@ ffzg-firmware:
         - kvm_intel
 
 # kvm nasted virtualization support
-#/etc/modprobe.d/kvm_nested.conf:
-#  file.managed:
-#    - source: salt://ganeti/files/kvm_nested.conf
-#    - user: root
-#    - group: root
-#    - mode: 644
+/etc/modprobe.d/kvm_nested.conf:
+  file.managed:
+    - source: salt://ganeti/files/kvm_nested.conf
+    - user: root
+    - group: root
+    - mode: 644
 
 # Newer kernels don't need irqbalance.
 irqbalance:
