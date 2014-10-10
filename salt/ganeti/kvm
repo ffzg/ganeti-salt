@@ -1,2 +1,0 @@
-#!/bin/sh
-exec /usr/bin/kvm.real -cpu kvm64,+monitor,+vme,+lahf_lm,+xtpr,+vmx,+ds_cpl,+pbe,+tm,+ht,+ss,+acpi "$@"
