@@ -14,9 +14,12 @@ iface bond0 inet manual
     bond-mode 802.3ad
     bond-lacp-rate fast
     bond-miimon 100
-    bond-xmit_hash_policy layer3+4
+    bond-xmit_hash_policy layer2+3
     bond-downdelay 200
     bond-updelay 200
+    {%- if node['bonding-nics'] %}
+    bond-slaves {{ node['bonding-nics']|join(' ') }}
+    {%- endif %}
     up /sbin/ethtool --offload $IFACE gso off tso off sg off gro off
     up /sbin/ip link set dev $IFACE mtu 9000
     up /sbin/ip link set $IFACE txqueuelen 10000

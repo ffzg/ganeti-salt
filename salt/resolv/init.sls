@@ -18,6 +18,6 @@
     - source: salt://resolv/resolv.conf
     - template: jinja
     - defaults:
-        nameservers: ['193.198.212.8','193.198.213.8']
-        searchpath: 'net.ffzg.hr. ffzg.hr.'
+        nameservers: ['193.198.212.8','193.198.213.8', '8.8.8.8']
+        searchpath: 'gnt.ffzg.hr. net.ffzg.hr. ffzg.hr.'
         options: 'ndots:2'

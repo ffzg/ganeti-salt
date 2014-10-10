@@ -36,17 +36,17 @@ drbd8-utils:
 # TODO: fix ffzg repo and use fromrepo instead hardcoded
 # versions
 kvmpkgs:
-  pkg.installed:
+  pkg.latest:
     - pkgs:
-      - libspice-server1: 0.12.4-0nocelt2~bpo70+1
-      - libusb-1.0-0: 2:1.0.17-1~bpo70+1
-      - libusbredirparser1: 0.6-2~bpo70+1
-      - qemu-keymaps: 1.7.0+dfsg-2~bpo70+2
-      - qemu-kvm: 1.7.0+dfsg-2~bpo70+2
-      - qemu-system-common: 1.7.0+dfsg-2~bpo70+2
-      - qemu-system-x86: 1.7.0+dfsg-2~bpo70+2
-      - qemu-utils: 1.7.0+dfsg-2~bpo70+2
-      - seabios: 1.7.3-3~bpo70+1
+      - libspice-server1
+      - libusb-1.0-0
+      - libusbredirparser1
+      - qemu-kvm
+      - qemu-system-common
+      - qemu-system-x86
+      - qemu-utils
+      - seabios
+    - fromrepo: wheezy-backports
 
 # Install ganeti specific version and related tools.
 ganeti-extra:
@@ -73,7 +73,7 @@ ganeti:
       - ganeti-extra
 
 # FIX (hardcoded major version) dependency problems
-ganeti-htools-2.10:
+ganeti-htools-2.11:
   pkg.latest:
     - fromrepo: wheezy-backports
     - require:
@@ -82,11 +82,11 @@ ganeti-htools-2.10:
 # Setup FFZG kernel & initrd symlinks for easier maintenance.
 /boot/vmlinuz-3.10-kvmU:
   file.symlink:
-    - target: /boot/vmlinuz-3.10.0-1-amd64
+    - target: /boot/vmlinuz-3.10.0-4-amd64
 
 /boot/initrd.img-3.10-kvmU:
   file.symlink:
-    - target: /boot/initrd.img-3.10.0-1-amd64
+    - target: /boot/initrd.img-3.10.0-4-amd64
 
 # Setup Debian kernel & initrd symlinks for easier maintenance.
 /boot/vmlinuz-3.2-kvmU:

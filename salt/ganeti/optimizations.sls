@@ -7,7 +7,7 @@
 #
 
 # Install ffzg kernel.
-linux-image-3.10.0-1-amd64:
+linux-image-3.10.0-4-amd64:
   pkg.latest
 
 # Install wheezy kernel.
@@ -36,35 +36,34 @@ ffzg-firmware:
         - kvm_intel
 
 # kvm nasted virtualization support
-#/etc/modprobe.d/kvm_nested.conf:
-#  file.managed:
-#    - source: salt://ganeti/files/kvm_nested.conf
-#    - user: root
-#    - group: root
-#    - mode: 644
+/etc/modprobe.d/kvm_nested.conf:
+  file.managed:
+    - source: salt://ganeti/files/kvm_nested.conf
+    - user: root
+    - group: root
+    - mode: 644
 
 # Newer kernels don't need irqbalance.
 irqbalance:
   pkg:
     - purged
 
-# Kvm tuning for ganeti <2.10,
-# use lowest node cpu flags.
-kvm_tuning:
-  cmd.run:
-    - name: dpkg-divert --add --rename --divert /usr/bin/kvm.real /usr/bin/kvm
-    - unless: dpkg-divert --list | grep /usr/bin/kvm.real
-    - require:
-      - pkg: ganeti-extra
+# Disable ipv6 autoconfiguration
+net.ipv6.conf.all.autoconf:
+  sysctl.present:
+    - value: 0
+    - config: /etc/sysctl.d/ganeti.conf
 
-  file.managed:
-    - name: /usr/bin/kvm
-    - source: salt://ganeti/kvm
-    - user: root
-    - group: root
-    - mode: 755
-    - require:
-      - cmd: kvm_tuning
+# No need for ipv6 forwarding.
+net.ipv6.conf.default.forwarding:
+  sysctl.present:
+    - value: 0
+    - config: /etc/sysctl.d/ganeti.conf
+
+net.ipv6.conf.all.forwarding:
+  sysctl.present:
+    - value: 0
+    - config: /etc/sysctl.d/ganeti.conf
 
 # Use lower sysctl swappines.
 vm.swappines:
@@ -165,6 +164,23 @@ vm.dirty_background_ratio:
     - value: 4
     - config: /etc/sysctl.d/ganeti.conf
 
+# Set grup parameters
+grub-common:
+  pkg:
+    - installed
+
+  file.managed:
+    - source: salt://ganeti/grub
+    - name: /etc/default/grub
+    - user: root
+    - group: root
+    - mode: 444
+
+  cmd.wait:
+    - name: /usr/sbin/update-grub
+    - watch:
+      - file: grub-common
+
 # Setup ganeti sysfs optimizations.
 sysfsutils:
   pkg:
@@ -183,5 +199,6 @@ sysfsutils:
     - user: root
     - group: root
     - mode: 644
+    - template: jinja
     - require:
       - pkg: sysfsutils

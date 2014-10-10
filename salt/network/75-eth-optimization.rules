@@ -1,0 +1,2 @@
+KERNEL=="eth[0-9]*", RUN+="/sbin/ip link set %k txqueuelen 10000"
+KERNEL=="eth[0-9]*", RUN+="/sbin/ethtool --offload %k gso off tso off sg off gro off"
