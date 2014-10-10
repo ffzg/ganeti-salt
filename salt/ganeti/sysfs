@@ -6,9 +6,12 @@
 # attribute = value
 # mode attribute = 0600 # (any valid argument for chmod)
 # owner attribute = root:wheel # (any valid argument for chown)
-
-block/sda/queue/scheduler = deadline
-block/sda/queue/iosched/front_merges = 0
-block/sda/queue/iosched/read_expire = 150
-block/sda/queue/iosched/write_expire = 1500
-
+{%- for dev in salt['cmd.run']('ls /sys/block/sd*/queue/iosched/front_merges').split('\n') %}
+{{ dev|replace("/sys/", "") }} = 0
+{%- endfor -%}
+{%- for dev in salt['cmd.run']('ls /sys/block/sd*/queue/iosched/read_expire').split('\n') %}
+{{ dev|replace("/sys/", "") }} = 150
+{%- endfor -%}
+{%- for dev in salt['cmd.run']('ls /sys/block/sd*/queue/iosched/write_expire').split('\n') %}
+{{ dev|replace("/sys/", "") }} = 1500
+{%- endfor -%}

@@ -164,6 +164,23 @@ vm.dirty_background_ratio:
     - value: 4
     - config: /etc/sysctl.d/ganeti.conf
 
+# Set grup parameters
+grub-common:
+  pkg:
+    - installed
+
+  file.managed:
+    - source: salt://ganeti/grub
+    - name: /etc/default/grub
+    - user: root
+    - group: root
+    - mode: 444
+
+  cmd.wait:
+    - name: /usr/sbin/update-grub
+    - watch:
+      - file: grub-common
+
 # Setup ganeti sysfs optimizations.
 sysfsutils:
   pkg:
@@ -182,5 +199,6 @@ sysfsutils:
     - user: root
     - group: root
     - mode: 644
+    - template: jinja
     - require:
       - pkg: sysfsutils
