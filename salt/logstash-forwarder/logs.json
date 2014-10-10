@@ -1,0 +1,27 @@
+{
+  "network": {
+    "servers": [ "10.80.2.101:5043" ],
+    "ssl certificate": "/srv/logstash-forwarder/logstash-forwarder.crt",
+    "ssl key": "/srv/logstash-forwarder/logstash-forwarder.key",
+    "ssl ca": "/srv/logstash-forwarder/logstash-forwarder.crt",
+    "timeout": 15
+  },
+
+  "files": [
+    {
+      "paths": [
+        "/var/log/messages",
+        "/var/log/*.log",
+        "/var/log/ganeti/*.log",
+        "/var/log/ganeti/os/*.log",
+        "/var/log/ganeti/cleaner/*.log"
+      ],
+      "fields": { "type": "syslog" }
+    }, {
+      "paths": [
+        "/var/log/apache2/*access*.log"
+      ],
+      "fields": { "type": "apache-access" }
+    }
+  ]
+}
