@@ -23,11 +23,11 @@ extra_packages:
       - hdparm
       - netsniff-ng
       - dstat
-      - sudo
       - curl
       - smartmontools
       - screen
       - iftop
       - nfs-common
       - ncurses-term
+      - molly-guard
 
