@@ -14,7 +14,7 @@
 -A OUTPUT -d 193.198.212.15/32 -j ACCEPT
 # allow vnc for ssh port forwarding and GWM access
 -A OUTPUT -m owner --uid-owner 2000-2030 -s 127.0.0.1 -j ACCEPT
--A OUTPUT -m owner --uid-owner 2000-2030 -s 10.80.2.20 -j ACCEPT
+-A OUTPUT -m owner --uid-owner 2000-2030 -d 10.80.2.100 -j ACCEPT
 # log and drop VM network access attempts
 -A OUTPUT -m owner --uid-owner 2000-2030 ! -d 10.80.3.0/24 -m limit --limit 5/min -j LOG --log-prefix "ganeti uid pool user network " --log-level 4
 -A OUTPUT -m owner --uid-owner 2000-2030 ! -d 10.80.3.0/24 -j DROP
@@ -34,6 +34,7 @@
 -A PUBLIC_OUT -d 161.53.160.5/32 -p udp -m udp --sport 123 -m state --state NEW,ESTABLISHED -j ACCEPT
 -A PUBLIC_OUT -d 161.53.30.80/32 -p udp -m udp --sport 123 -m state --state NEW,ESTABLISHED -j ACCEPT
 -A PUBLIC_OUT -d 161.53.30.170/32 -p udp -m udp --sport 123 -m state --state NEW,ESTABLISHED -j ACCEPT
+-A PUBLIC_OUT -d 193.198.212.229/32 -m state --state NEW,ESTABLISHED -j ACCEPT
 -A PUBLIC_OUT -p tcp -m tcp --sport 22 -m state --state ESTABLISHED -j ACCEPT
 -A PUBLIC_OUT -p tcp -m tcp --dport 22 -j ACCEPT
 -A PUBLIC_OUT -p tcp -m tcp --dport 25 -j ACCEPT
