@@ -48,7 +48,22 @@ irqbalance:
   pkg:
     - purged
 
+# Disable ipv6 autoconfiguration
+net.ipv6.conf.all.autoconf:
+  sysctl.present:
+    - value: 0
+    - config: /etc/sysctl.d/ganeti.conf
 
+# No need for ipv6 forwarding.
+net.ipv6.conf.default.forwarding:
+  sysctl.present:
+    - value: 0
+    - config: /etc/sysctl.d/ganeti.conf
+
+net.ipv6.conf.all.forwarding:
+  sysctl.present:
+    - value: 0
+    - config: /etc/sysctl.d/ganeti.conf
 
 # Use lower sysctl swappines.
 vm.swappines:
