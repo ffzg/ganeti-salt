@@ -39,7 +39,7 @@ iptables:
     - require:
       - pkg: iptables-persistent
     - defaults:
-      pub_if: br1001
+      pub_if: br0002
   pkg:
     - installed
     - names:
