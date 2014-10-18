@@ -48,6 +48,24 @@ irqbalance:
   pkg:
     - purged
 
+# Kvm tuning for ganeti,
+# use lowest node cpu flags.
+kvm_tuning:
+  cmd.run:
+    - name: dpkg-divert --add --rename --divert /usr/bin/kvm.real /usr/bin/kvm
+    - unless: dpkg-divert --list | grep /usr/bin/kvm.real
+    - require:
+      - pkg: ganeti-extra
+
+  file.managed:
+    - name: /usr/bin/kvm
+    - source: salt://ganeti/kvm
+    - user: root
+    - group: root
+    - mode: 755
+    - require:
+      - cmd: kvm_tuning
+
 # Disable ipv6 autoconfiguration
 net.ipv6.conf.all.autoconf:
   sysctl.present:
@@ -64,6 +82,7 @@ net.ipv6.conf.all.forwarding:
   sysctl.present:
     - value: 0
     - config: /etc/sysctl.d/ganeti.conf
+
 
 # Use lower sysctl swappines.
 vm.swappines:
