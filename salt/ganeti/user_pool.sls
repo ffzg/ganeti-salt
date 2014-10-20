@@ -11,7 +11,7 @@
 #
 
 # Add ganeti instance users.
-{% for usr in range(30) %}
+{% for usr in range(70) %}
 gnt{{ usr }}:
   group:
     - present
