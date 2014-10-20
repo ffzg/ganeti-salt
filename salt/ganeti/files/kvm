@@ -1,2 +1,11 @@
 #!/bin/sh
+{% for node in pillar['nodes'] -%}
+{% if node == grains['host'] -%}
+{% set node_group = salt['pillar.get']('nodes:'+node+':group', 'default') -%}
+{% if node_group == 'lib' -%}
+exec /usr/bin/kvm.real -cpu host "$@"
+{% else -%}
 exec /usr/bin/kvm.real -cpu kvm64,+monitor,+vme,+lahf_lm,+xtpr,+vmx,+ds_cpl,+pbe,+tm,+ht,+ss,+acpi "$@"
+{% endif -%}
+{% endif -%}
+{% endfor -%}

@@ -71,6 +71,7 @@ kvm_tuning:
     - user: root
     - group: root
     - mode: 755
+    - template: jinja
     - require:
       - cmd: kvm_tuning
 
