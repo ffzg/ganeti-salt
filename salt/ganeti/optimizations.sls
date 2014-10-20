@@ -80,6 +80,11 @@ net.ipv6.conf.all.autoconf:
     - value: 0
     - config: /etc/sysctl.d/ganeti.conf
 
+net.ipv6.conf.default.autoconf:
+  sysctl.present:
+    - value: 0
+    - config: /etc/sysctl.d/ganeti.conf
+
 # No need for ipv6 forwarding.
 net.ipv6.conf.default.forwarding:
   sysctl.present:
@@ -90,7 +95,6 @@ net.ipv6.conf.all.forwarding:
   sysctl.present:
     - value: 0
     - config: /etc/sysctl.d/ganeti.conf
-
 
 # Use lower sysctl swappines.
 vm.swappines:
@@ -104,8 +108,18 @@ net.ipv4.conf.default.rp_filter:
     - value: 1
     - config: /etc/sysctl.d/ganeti.conf
 
+net.ipv4.conf.all.rp_filter:
+  sysctl.present:
+    - value: 1
+    - config: /etc/sysctl.d/ganeti.conf
+
 # Do not accept source routing.
 net.ipv4.conf.default.accept_source_route:
+  sysctl.present:
+    - value: 0
+    - config: /etc/sysctl.d/ganeti.conf
+
+net.ipv4.conf.all.accept_source_route:
   sysctl.present:
     - value: 0
     - config: /etc/sysctl.d/ganeti.conf
