@@ -193,6 +193,12 @@ net.ipv4.tcp_congestion_control:
     - value: highspeed
     - config: /etc/sysctl.d/ganeti.conf
 
+# Fair Queue CoDel packet scheduler to fight bufferbloat
+net.core.default_qdisc:
+  sysctl.present:
+    - value: fq_codel
+    - config: /etc/sysctl.d/ganeti.conf
+
 # Reduce water levels to start marketing background (and foreground)
 # write back early. Reduces the chance of resource starvation.
 vm.dirty_ratio:
