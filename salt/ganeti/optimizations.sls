@@ -249,3 +249,9 @@ sysfsutils:
     - template: jinja
     - require:
       - pkg: sysfsutils
+
+# Allow bcache devices to participate in VG.
+/etc/lvm/lvm.conf:
+  file.sed:
+    - before: '# types = \[ "fd"\, 16 \]'
+    - after: 'types = [ "bcache", 16 ]'
