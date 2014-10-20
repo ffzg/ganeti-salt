@@ -50,12 +50,4 @@
   host.present:
     - ip: {{ pillar.nodes[node].drbd.address }}
 
-# drbd network hostname
-{{ node }}-drbd-hostname:
-  host.present:
-    - ip: {{ pillar.nodes[node].drbd.address }}
-    - name: {{ node }}
-    - require:
-      - host: {{ node }}.{{ drbd_domain }}
-
 {% endfor %}
