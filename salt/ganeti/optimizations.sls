@@ -18,7 +18,7 @@ linux-image-3.2.0-4-amd64:
 ffzg-firmware:
   pkg.latest
 
-# Manage /etc/modules, setup/load drbd,
+# Manage /etc/modules, load drbd,
 # tcp_highspeed congestion control algorithm and
 # bridge module (because sysctrl will fail).
 /etc/modules:
@@ -35,7 +35,7 @@ ffzg-firmware:
         - bridge
         - kvm_intel
 
-# kvm nasted virtualization support
+# KVM nasted virtualization support.
 /etc/modprobe.d/kvm_nested.conf:
   file.managed:
     - source: salt://ganeti/files/kvm_nested.conf
@@ -43,7 +43,7 @@ ffzg-firmware:
     - group: root
     - mode: 644
 
-# DRBD ganeti settings
+# DRBD ganeti settings.
 /etc/modprobe.d/drbd.conf:
   file.managed:
     - source: salt://ganeti/files/drbd.conf
