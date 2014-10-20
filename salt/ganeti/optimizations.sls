@@ -30,7 +30,7 @@ ffzg-firmware:
     - template: jinja
     - context:
       modules:
-        - drbd minor_count=255 usermode_helper=/bin/true
+        - drbd
         - tcp_highspeed
         - bridge
         - kvm_intel
@@ -39,6 +39,14 @@ ffzg-firmware:
 /etc/modprobe.d/kvm_nested.conf:
   file.managed:
     - source: salt://ganeti/files/kvm_nested.conf
+    - user: root
+    - group: root
+    - mode: 644
+
+# DRBD ganeti settings
+/etc/modprobe.d/drbd.conf:
+  file.managed:
+    - source: salt://ganeti/files/drbd.conf
     - user: root
     - group: root
     - mode: 644
