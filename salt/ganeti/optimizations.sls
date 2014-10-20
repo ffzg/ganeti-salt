@@ -23,7 +23,7 @@ ffzg-firmware:
 # bridge module (because sysctrl will fail).
 /etc/modules:
   file.managed:
-    - source: salt://ganeti/modules
+    - source: salt://ganeti/files/modules
     - user: root
     - group: root
     - mode: 644
@@ -67,7 +67,7 @@ kvm_tuning:
 
   file.managed:
     - name: /usr/bin/kvm
-    - source: salt://ganeti/kvm
+    - source: salt://ganeti/files/kvm
     - user: root
     - group: root
     - mode: 755
@@ -217,7 +217,7 @@ grub-common:
     - installed
 
   file.managed:
-    - source: salt://ganeti/grub
+    - source: salt://ganeti/files/grub
     - name: /etc/default/grub
     - user: root
     - group: root
@@ -241,7 +241,7 @@ sysfsutils:
       - pkg: sysfsutils
 
   file.managed:
-    - source: salt://ganeti/sysfs
+    - source: salt://ganeti/files/sysfs
     - name: /etc/sysfs.conf
     - user: root
     - group: root
