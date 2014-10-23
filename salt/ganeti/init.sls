@@ -19,7 +19,7 @@
 # Setup hostname as fqdn.
 /etc/hostname:
   file.managed:
-    - source: salt://ganeti/hostname
+    - source: salt://ganeti/files/hostname
     - user: root
     - group: root
     - mode: 644

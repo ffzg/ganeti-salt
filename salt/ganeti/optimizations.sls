@@ -18,27 +18,35 @@ linux-image-3.2.0-4-amd64:
 ffzg-firmware:
   pkg.latest
 
-# Manage /etc/modules, setup/load drbd,
+# Manage /etc/modules, load drbd,
 # tcp_highspeed congestion control algorithm and
 # bridge module (because sysctrl will fail).
 /etc/modules:
   file.managed:
-    - source: salt://ganeti/modules
+    - source: salt://ganeti/files/modules
     - user: root
     - group: root
     - mode: 644
     - template: jinja
     - context:
       modules:
-        - drbd minor_count=255 usermode_helper=/bin/true
+        - drbd
         - tcp_highspeed
         - bridge
         - kvm_intel
 
-# kvm nasted virtualization support
+# KVM nasted virtualization support.
 /etc/modprobe.d/kvm_nested.conf:
   file.managed:
     - source: salt://ganeti/files/kvm_nested.conf
+    - user: root
+    - group: root
+    - mode: 644
+
+# DRBD ganeti settings.
+/etc/modprobe.d/drbd.conf:
+  file.managed:
+    - source: salt://ganeti/files/drbd.conf
     - user: root
     - group: root
     - mode: 644
@@ -48,8 +56,32 @@ irqbalance:
   pkg:
     - purged
 
+# Kvm tuning for ganeti,
+# use lowest node cpu flags.
+kvm_tuning:
+  cmd.run:
+    - name: dpkg-divert --add --rename --divert /usr/bin/kvm.real /usr/bin/kvm
+    - unless: dpkg-divert --list | grep /usr/bin/kvm.real
+    - require:
+      - pkg: ganeti-extra
+
+  file.managed:
+    - name: /usr/bin/kvm
+    - source: salt://ganeti/files/kvm
+    - user: root
+    - group: root
+    - mode: 755
+    - template: jinja
+    - require:
+      - cmd: kvm_tuning
+
 # Disable ipv6 autoconfiguration
 net.ipv6.conf.all.autoconf:
+  sysctl.present:
+    - value: 0
+    - config: /etc/sysctl.d/ganeti.conf
+
+net.ipv6.conf.default.autoconf:
   sysctl.present:
     - value: 0
     - config: /etc/sysctl.d/ganeti.conf
@@ -77,8 +109,18 @@ net.ipv4.conf.default.rp_filter:
     - value: 1
     - config: /etc/sysctl.d/ganeti.conf
 
+net.ipv4.conf.all.rp_filter:
+  sysctl.present:
+    - value: 1
+    - config: /etc/sysctl.d/ganeti.conf
+
 # Do not accept source routing.
 net.ipv4.conf.default.accept_source_route:
+  sysctl.present:
+    - value: 0
+    - config: /etc/sysctl.d/ganeti.conf
+
+net.ipv4.conf.all.accept_source_route:
   sysctl.present:
     - value: 0
     - config: /etc/sysctl.d/ganeti.conf
@@ -152,6 +194,12 @@ net.ipv4.tcp_congestion_control:
     - value: highspeed
     - config: /etc/sysctl.d/ganeti.conf
 
+# Fair Queue CoDel packet scheduler to fight bufferbloat
+net.core.default_qdisc:
+  sysctl.present:
+    - value: fq_codel
+    - config: /etc/sysctl.d/ganeti.conf
+
 # Reduce water levels to start marketing background (and foreground)
 # write back early. Reduces the chance of resource starvation.
 vm.dirty_ratio:
@@ -170,7 +218,7 @@ grub-common:
     - installed
 
   file.managed:
-    - source: salt://ganeti/grub
+    - source: salt://ganeti/files/grub
     - name: /etc/default/grub
     - user: root
     - group: root
@@ -194,7 +242,7 @@ sysfsutils:
       - pkg: sysfsutils
 
   file.managed:
-    - source: salt://ganeti/sysfs
+    - source: salt://ganeti/files/sysfs
     - name: /etc/sysfs.conf
     - user: root
     - group: root
@@ -202,3 +250,9 @@ sysfsutils:
     - template: jinja
     - require:
       - pkg: sysfsutils
+
+# Allow bcache devices to participate in VG.
+/etc/lvm/lvm.conf:
+  file.sed:
+    - before: '# types = \[ "fd"\, 16 \]'
+    - after: 'types = [ "bcache", 16 ]'
