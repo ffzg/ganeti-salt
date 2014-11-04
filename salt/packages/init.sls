@@ -30,4 +30,5 @@ extra_packages:
       - nfs-common
       - ncurses-term
       - molly-guard
+      - intel-microcode
 
