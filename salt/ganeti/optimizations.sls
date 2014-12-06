@@ -252,4 +252,4 @@ sysfsutils:
 /etc/lvm/lvm.conf:
   file.sed:
     - before: '# types = \[ "fd"\, 16 \]'
-    - after: 'types = [ "bcache", 16 ]'
+    - after: 'types = [ "zram", 252, "bcache", 16 ]'
