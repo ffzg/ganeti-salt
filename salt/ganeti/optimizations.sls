@@ -6,6 +6,11 @@
 # Ganeti optimizations
 #
 
+# initramfs from backports
+initramfs-tools:
+  pkg.latest:
+    - fromrepo: wheezy-backports
+
 # Install ffzg kernel.
 linux-image-3.10.0-4-amd64:
   pkg.latest
@@ -13,6 +18,15 @@ linux-image-3.10.0-4-amd64:
 # Install wheezy kernel.
 linux-image-3.2.0-4-amd64:
   pkg.latest
+
+# Install jessie kernel.
+linux-image-3.16.0-4-amd64:
+  pkg.latest
+
+# Install wheezy bpo kernel.
+linux-image-3.16.0-0.bpo.4-amd64:
+  pkg.latest:
+    - fromrepo: wheezy-backports
 
 # Install ffzg-firmware.
 ffzg-firmware:
