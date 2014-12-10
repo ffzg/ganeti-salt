@@ -79,6 +79,24 @@ ganeti-htools-2.11:
     - require:
       - pkg: ganeti
 
+# Setup jessie kernel & initrd symlinks for easier maintenance.
+/boot/vmlinuz-3.16-kvmU:
+  file.symlink:
+    - target: /boot/vmlinuz-3.16.0-4-amd64
+
+/boot/initrd.img-3.16-kvmU:
+  file.symlink:
+    - target: /boot/initrd.img-3.16.0-4-amd64
+
+# Setup wheezy bpo kernel & initrd symlinks for easier maintenance.
+/boot/vmlinuz-3.16-bpo-kvmU:
+  file.symlink:
+    - target: /boot/vmlinuz-3.16.0-0.bpo.4-amd64
+
+/boot/initrd.img-3.16-bpo-kvmU:
+  file.symlink:
+    - target: /boot/initrd.img-3.16.0-0.bpo.4-amd64
+
 # Setup FFZG kernel & initrd symlinks for easier maintenance.
 /boot/vmlinuz-3.10-kvmU:
   file.symlink:
@@ -88,7 +106,7 @@ ganeti-htools-2.11:
   file.symlink:
     - target: /boot/initrd.img-3.10.0-4-amd64
 
-# Setup Debian kernel & initrd symlinks for easier maintenance.
+# Setup wheezy kernel & initrd symlinks for easier maintenance.
 /boot/vmlinuz-3.2-kvmU:
   file.symlink:
     - target: /boot/vmlinuz-3.2.0-4-amd64

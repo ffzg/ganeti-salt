@@ -24,7 +24,7 @@ ARCH="amd64"
 
 # SUITE: change suite to any of the ones supported by deboostrap; this
 # could be unstable, etch, etc.:
-SUITE="wheezy"
+SUITE="jessie"
 
 # EXTRA_PKGS: depending on the suite and architecture you are using, different
 # extra packages are needed for different hypervisors. For example:
@@ -38,7 +38,7 @@ SUITE="wheezy"
 # KVM, for squeeze/wheezy i386:
 # EXTRA_PKGS="acpi-support-base,console-tools,udev,linux-image-686"
 # KVM, for squeeze/wheezy amd64:
-EXTRA_PKGS="acpi-support-base,console-tools,udev,linux-image-amd64,vim-nox,htop,strace,lsof,less"
+EXTRA_PKGS="acpi-support-base,udev,linux-image-amd64,vim-nox,htop,strace,lsof,less"
 
 # COMPONENTS: if defined, overrides the default debootstrap components
 # ("main"); when not defined, it will not passed to debootstrap
@@ -72,7 +72,7 @@ CLEAN_CACHE="14"
 # (more styles may be added in the future)
 # The default is "msdos" from ganeti 2.0 onwards, but none if installing under
 # Ganeti 1.2 (os api version 5)
-PARTITION_STYLE="msdos"
+PARTITION_STYLE="none"
 
 # PARTITION_ALIGNMENT: the alignment of the partitions in sectors
 # (512B); this defaults to 1MiB to give grub enough space for

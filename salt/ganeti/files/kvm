@@ -6,6 +6,6 @@
 exec /usr/bin/kvm.real -cpu host "$@"
 {% else -%}
 exec /usr/bin/kvm.real -cpu kvm64,+monitor,+vme,+lahf_lm,+xtpr,+vmx,+ds_cpl,+pbe,+tm,+ht,+ss,+acpi "$@"
-{% endif -%}
-{% endif -%}
-{% endfor -%}
+{%- endif -%}
+{%- endif -%}
+{%- endfor -%}

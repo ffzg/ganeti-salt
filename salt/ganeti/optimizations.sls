@@ -6,6 +6,11 @@
 # Ganeti optimizations
 #
 
+# initramfs from backports
+initramfs-tools:
+  pkg.latest:
+    - fromrepo: wheezy-backports
+
 # Install ffzg kernel.
 linux-image-3.10.0-4-amd64:
   pkg.latest
@@ -13,6 +18,15 @@ linux-image-3.10.0-4-amd64:
 # Install wheezy kernel.
 linux-image-3.2.0-4-amd64:
   pkg.latest
+
+# Install jessie kernel.
+linux-image-3.16.0-4-amd64:
+  pkg.latest
+
+# Install wheezy bpo kernel.
+linux-image-3.16.0-0.bpo.4-amd64:
+  pkg.latest:
+    - fromrepo: wheezy-backports
 
 # Install ffzg-firmware.
 ffzg-firmware:
@@ -212,23 +226,6 @@ vm.dirty_background_ratio:
     - value: 4
     - config: /etc/sysctl.d/ganeti.conf
 
-# Set grup parameters
-grub-common:
-  pkg:
-    - installed
-
-  file.managed:
-    - source: salt://ganeti/files/grub
-    - name: /etc/default/grub
-    - user: root
-    - group: root
-    - mode: 444
-
-  cmd.wait:
-    - name: /usr/sbin/update-grub
-    - watch:
-      - file: grub-common
-
 # Setup ganeti sysfs optimizations.
 sysfsutils:
   pkg:
@@ -255,4 +252,4 @@ sysfsutils:
 /etc/lvm/lvm.conf:
   file.sed:
     - before: '# types = \[ "fd"\, 16 \]'
-    - after: 'types = [ "bcache", 16 ]'
+    - after: 'types = [ "zram", 252, "bcache", 16 ]'
